@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>East Bengal FC: Records & History (1920-2025)</title>
+    
+    <style>
+        /* CSS variables and Core resets */
+        :root {
+            --eb-red: #c8102e; 
+            --eb-gold: #ffc72c; 
+            --eb-dark: #1f2937; 
+            --eb-light: #f3f4f6;
+            --font-sans: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: var(--font-sans);
+            background-color: var(--eb-light);
+            line-height: 1.6;
+            color: #333;
+            padding: 1rem;
+        }
+
+        /* Container & Layout */
+        .max-w-4xl { max-width: 56rem; margin-left: auto; margin-right: auto; }
+        .p-6 { padding: 1.5rem; }
+        .mx-auto { margin-left: auto; margin-right: auto; }
+        .rounded-xl { border-radius: 0.75rem; }
+        .shadow-2xl { box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25); }
+        .bg-white { background-color: white; }
+        .mb-4 { margin-bottom: 1rem; }
+        .mb-8 { margin-bottom: 2rem; }
+        .mt-4 { margin-top: 1rem; }
+        .mt-8 { margin-top: 2rem; }
+        .flex { display: flex; }
+        .flex-col { flex-direction: column; }
+        .items-center { align-items: center; }
+        .space-x-2 > * + * { margin-left: 0.5rem; }
+        .space-x-3 > * + * { margin-left: 0.75rem; }
+        .hidden { display: none; }
+        .text-sm { font-size: 0.875rem; }
+        .font-bold { font-weight: 700; }
+        .font-extrabold { font-weight: 800; }
+        .text-gray-500 { color: #6b7280; }
+        .text-gray-700 { color: #374151; }
+
+        /* Typography */
+        .text-4xl { font-size: 2.25rem; }
+        .text-2xl { font-size: 1.5rem; }
+        .text-xl { font-size: 1.25rem; }
+
+        /* Tables */
+        .overflow-x-auto { overflow-x: auto; }
+        .styled-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.85rem;
+            text-align: left;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+        .styled-table thead tr { background-color: var(--eb-red); color: white; }
+        .styled-table th, .styled-table td { padding: 10px 12px; border-bottom: 1px solid #ddd; }
+        .styled-table tbody tr:nth-of-type(even) { background-color: #f8f8f8; }
+        .styled-table tbody tr:hover { background-color: var(--eb-gold); color: var(--eb-dark); cursor: pointer; }
+
+        /* Interactive Elements */
+        #search-container {
+            border: 1px solid #d1d5db;
+            padding: 1rem;
+            border-radius: 0.5rem;
+        }
+        input {
+            padding: 0.5rem;
+            border: 1px solid #9ca3af;
+            border-radius: 0.375rem;
+            outline: none;
+        }
+        input:focus { border-color: var(--eb-red); box-shadow: 0 0 0 2px rgba(200, 16, 46, 0.2); }
+        .btn {
+            cursor: pointer;
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            border: none;
+            font-weight: 600;
+            transition: opacity 0.2s;
+        }
+        .btn:hover { opacity: 0.9; }
+        .btn-red { background-color: var(--eb-red); color: white; }
+        .btn-gray { background-color: #6b7280; color: white; }
+
+        .highlight-span { border-radius: 4px; transition: background-color 0.3s; }
+        .temp-highlight { background-color: var(--eb-gold); }
+        .current-match { background-color: var(--eb-red) !important; color: white !important; }
+
+        .floating-action-button {
+            position: fixed;
+            bottom: 25px;
+            right: 25px;
+            width: 60px;
+            height: 60px;
+            background-color: var(--eb-red);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+            cursor: pointer;
+            z-index: 1050;
+            font-size: 24px;
+        }
+        .floating-search-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.92); 
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            padding-top: 15vh;
+            z-index: 1100;
+        }
+        .floating-search-box {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px;
+            background-color: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50px;
+            width: 90%;
+            max-width: 500px;
+            margin-bottom: 16px;
+        }
+        #floatingSearchInput {
+            flex-grow: 1;
+            background: transparent;
+            border: none;
+            color: white;
+            padding: 8px 15px;
+            font-size: 1rem;
+        }
+        .circle-btn {
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            border: none;
+            font-size: 18px;
+        }
+        
+        @media (min-width: 640px) {
+            .sm\:flex-row { flex-direction: row; }
+        }
+    </style>
+</head>
+<body> 
+
+    <div id="main-book-container" class="max-w-4xl mx-auto p-6 bg-white rounded-xl shadow-2xl">
+        <h1 class="text-4xl font-extrabold mb-4" style="color: var(--eb-red);">
+            East Bengal FC: Records & Statistics (1920–2025)
+        </h1>
+        <p class="text-gray-500 mb-8 text-sm">
+            Full Archive: From Foundation to December 2025.
+        </p>
+
+        <div id="search-container" class="mb-4 flex flex-col sm:flex-row items-center space-x-3">
+            <input type="text" id="searchInput" placeholder="Search milestones..." style="flex-grow: 1;">
+            <button onclick="searchAndHighlight()" class="btn btn-red">🔍 Search</button>
+            <button id="clearBtn" class="btn btn-gray">🧹 Clear</button>
+            <div id="searchControls" class="flex items-center space-x-2 hidden">
+                <span id="matchCounter" class="text-sm font-bold text-gray-700"></span>
+                <button id="prevBtn" class="btn btn-red" style="padding: 5px 10px;">▲</button>
+                <button id="nextBtn" class="btn btn-red" style="padding: 5px 10px;">▼</button>
+            </div>
+        </div>
+        
+        <div id="content-to-search">
+            <h2 class="text-2xl font-bold mb-4 mt-6" style="color: var(--eb-dark);">1. Historical Timeline</h2>
+            
+            <h3 class="text-xl font-semibold mb-2 mt-4">The Genesis (1920)</h3>
+            <p class="mb-4 text-gray-700">
+                Founded on **August 1, 1920**, following a protest against the exclusion of Sailesh Bose from Jorabagan Club. Suresh Chandra Chaudhuri, Raja Manmatha Nath Chaudhuri, Ramesh Chandra Sen, and Aurobinda Ghosh established the club to represent the people of East Bengal.
+            </p>
+
+            <h3 class="text-xl font-semibold mb-2 mt-4">Breakthrough Era (1940s–1950s)</h3>
+            <p class="mb-4 text-gray-700">
+                The club won its first **Calcutta Football League (CFL)** title in **1942** and its first **IFA Shield** in **1943**. A historic triple IFA Shield win occurred from **1949–1951**. In 1953, the club toured Romania, becoming the first Indian club to tour the Soviet Union/Eastern Europe.
+            </p>
+
+            <h3 class="text-xl font-semibold mb-2 mt-4">The Iconic 70s</h3>
+            <p class="mb-4 text-gray-700">
+                A golden era where East Bengal won **6 consecutive CFL titles (1970–1975)**. In 1975, they recorded the legendary **5-0 win** over Mohun Bagan in the IFA Shield final. They also won the IFA Shield 5 times in a row (1972–1976).
+            </p>
+
+            <h3 class="text-xl font-semibold mb-2 mt-4">Modern Era & ASEAN Glory (2000–2019)</h3>
+            <p class="mb-4 text-gray-700">
+                East Bengal won the **National Football League** in 2000–01, 2002–03, and 2003–04. The crown jewel was the **ASEAN Club Championship in 2003**, won in Jakarta, Indonesia. Between 2010 and 2017, the club set a record with **8 consecutive CFL titles**.
+            </p>
+
+            <h3 class="text-xl font-semibold mb-2 mt-4">ISL & Recent Success (2020–2025)</h3>
+            <p class="mb-4 text-gray-700">
+                Entering the **Indian Super League (ISL)** in 2020, the club underwent several transitions. In **January 2024**, they ended a 12-year national trophy drought by winning the **Kalinga Super Cup**. Throughout **2025**, the club consolidated its position in the top tier, concluding the year with strong performances in domestic leagues and continued dominance in regional competitions.
+            </p>
+            
+            <h2 class="text-2xl font-bold mb-4 mt-8" style="color: var(--eb-dark);">2. Full Honors List (Final Update: Dec 2025)</h2>
+            
+            <div class="overflow-x-auto rounded-xl mb-6">
+                <table class="styled-table">
+                    <thead>
+                        <tr><th>Category</th><th>Tournament</th><th>Titles</th><th>Years</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr style="background-color: #fef3c7; font-weight: bold;"><td colspan="4">International</td></tr>
+                        <tr><td>International</td><td>ASEAN Club Championship</td><td>1</td><td>2003</td></tr>
+                        
+                        <tr style="background-color: #fef3c7; font-weight: bold;"><td colspan="4">National Major</td></tr>
+                        <tr><td>League</td><td>NFL / I-League</td><td>3</td><td>2000–01, 2002–03, 2003–04</td></tr>
+                        <tr><td>Cup</td><td>Federation Cup</td><td>8</td><td>1978, 1980, 1985, 1996, 2007, 2009–10, 2010, 2012</td></tr>
+                        <tr><td>Cup</td><td>Super Cup (Kalinga)</td><td>1</td><td>2024</td></tr>
+                        <tr><td>Cup</td><td>Indian Super Cup (Legacy)</td><td>3</td><td>1997, 2006, 2011</td></tr>
+                        <tr><td>Major</td><td>Durand Cup</td><td>16</td><td>1951, 1952, 1956, 1960, 1967, 1970, 1972, 1978, 1982, 1989, 1990, 1991, 1993, 1995, 2002, 2004</td></tr>
+                        <tr><td>Major</td><td>IFA Shield</td><td>29</td><td>1943, 1945, 1949, 1950, 1951, 1958, 1961, 1965, 1966, 1970, 1972, 1973, 1974, 1975, 1976, 1981, 1983, 1984, 1986, 1990, 1991, 1994, 1995, 1997, 2000, 2001, 2002, 2012, 2018</td></tr>
+                        <tr><td>Major</td><td>Rovers Cup</td><td>10</td><td>1949, 1962, 1967, 1969, 1972, 1973, 1975, 1980, 1990, 1994</td></tr>
+                        
+                        <tr style="background-color: #fef3c7; font-weight: bold;"><td colspan="4">Regional</td></tr>
+                        <tr><td>League</td><td>Calcutta Football League</td><td>41</td><td>1942, 1945, 1946, 1949, 1950, 1952, 1961, 1966, 1970, 1971, 1972, 1973, 1974, 1975, 1977, 1982, 1985, 1987, 1988, 1989, 1991, 1993, 1995, 1996, 1998, 1999, 2000, 2002, 2003, 2004, 2006, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2024, 2025</td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <p class="text-sm text-gray-700 mt-4">
+                Note: The 2025 season concluded with East Bengal maintaining its high standards in regional football and continuing its pursuit of excellence in the ISL and national cup competitions.
+            </p>
+
+            <div class="mt-10 p-4 bg-gray-100 rounded-lg text-center">
+                <p class="text-sm text-gray-600">© 2025 East Bengal FC Digital Archive. Records through Dec 31, 2025.</p>
+            </div>
+        </div> 
+    </div>
+
+    <div id="floating-search-btn" class="floating-action-button" title="Quick Search">🔍</div>
+
+    <div id="floating-search-overlay" class="floating-search-overlay">
+        <div class="floating-search-box">
+            <input type="text" id="floatingSearchInput" placeholder="Quick find history...">
+            <button id="floatingClearBtn" class="circle-btn" style="background: #f59e0b; color: white;">🧹</button>
+            <button id="floatingSearchActionBtn" class="circle-btn" style="background: var(--eb-red); color: white;">🔍</button>
+            <button id="floatingCloseBtn" class="circle-btn" style="background: #6b7280; color: white;">❌</button>
+        </div>
+        <div id="floatingSearchControls" class="flex items-center space-x-3 hidden">
+            <button id="floatingPrevBtn" class="circle-btn" style="background: var(--eb-red); color: white;">▲</button>
+            <span id="floatingMatchCounter" style="color: white; font-weight: bold;">0 of 0</span>
+            <button id="floatingNextBtn" class="circle-btn" style="background: var(--eb-red); color: white;">▼</button>
+        </div>
+    </div>
+    
+    <script>
+        let matches = [];
+        let currentIndex = -1;
+
+        const contentArea = document.getElementById('content-to-search');
+        const searchInput = document.getElementById('searchInput');
+        const floatingInput = document.getElementById('floatingSearchInput');
+        const matchCounter = document.getElementById('matchCounter');
+        const floatingMatchCounter = document.getElementById('floatingMatchCounter');
+        const searchControls = document.getElementById('searchControls');
+        const floatingSearchControls = document.getElementById('floatingSearchControls');
+
+        function clearHighlights() {
+            searchControls.classList.add('hidden');
+            floatingSearchControls.classList.add('hidden');
+            matches = [];
+            currentIndex = -1;
+            const highlightedSpans = contentArea.querySelectorAll('.highlight-span');
+            highlightedSpans.forEach(span => {
+                const parent = span.parentNode;
+                parent.replaceChild(document.createTextNode(span.textContent), span);
+            });
+            contentArea.normalize();
+        }
+
+        function navigateToMatch(index) {
+            if (index < 0 || index >= matches.length) return;
+            if (currentIndex !== -1 && matches[currentIndex]) matches[currentIndex].classList.remove('current-match');
+            currentIndex = index;
+            const currentElement = matches[currentIndex];
+            currentElement.classList.add('current-match');
+            currentElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            const text = `${currentIndex + 1} / ${matches.length}`;
+            matchCounter.textContent = text;
+            floatingMatchCounter.textContent = text;
+        }
+
+        function searchAndHighlight() {
+            clearHighlights();
+            const term = (searchInput.value.trim() || floatingInput.value.trim());
+            if (!term) return;
+            
+            const regex = new RegExp('(' + term.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + ')', 'gi');
+            const walker = document.createTreeWalker(contentArea, NodeFilter.SHOW_TEXT);
+            const nodes = [];
+            let n;
+            while (n = walker.nextNode()) nodes.push(n);
+
+            nodes.forEach(node => {
+                if (regex.test(node.nodeValue)) {
+                    const frag = document.createDocumentFragment();
+                    let last = 0;
+                    node.nodeValue.replace(regex, (m, p, offset) => {
+                        frag.appendChild(document.createTextNode(node.nodeValue.substring(last, offset)));
+                        const span = document.createElement('span');
+                        span.textContent = m;
+                        span.className = 'highlight-span temp-highlight';
+                        setTimeout(() => span.classList.remove('temp-highlight'), 1000);
+                        frag.appendChild(span);
+                        matches.push(span);
+                        last = offset + m.length;
+                    });
+                    frag.appendChild(document.createTextNode(node.nodeValue.substring(last)));
+                    node.parentNode.replaceChild(frag, node);
+                }
+            });
+
+            if (matches.length > 0) {
+                searchControls.classList.remove('hidden');
+                floatingSearchControls.classList.remove('hidden');
+                navigateToMatch(0);
+            }
+        }
+
+        document.getElementById('floating-search-btn').onclick = () => {
+            document.getElementById('floating-search-overlay').style.display = 'flex';
+            floatingInput.focus();
+        };
+        document.getElementById('floatingCloseBtn').onclick = () => {
+            document.getElementById('floating-search-overlay').style.display = 'none';
+        };
+        document.getElementById('floatingSearchActionBtn').onclick = searchAndHighlight;
+        document.getElementById('nextBtn').onclick = () => navigateToMatch((currentIndex + 1) % matches.length);
+        document.getElementById('floatingNextBtn').onclick = () => navigateToMatch((currentIndex + 1) % matches.length);
+        document.getElementById('prevBtn').onclick = () => navigateToMatch((currentIndex - 1 + matches.length) % matches.length);
+        document.getElementById('floatingPrevBtn').onclick = () => navigateToMatch((currentIndex - 1 + matches.length) % matches.length);
+        
+        const clearAll = () => { searchInput.value = ''; floatingInput.value = ''; clearHighlights(); };
+        document.getElementById('clearBtn').onclick = clearAll;
+        document.getElementById('floatingClearBtn').onclick = clearAll;
+
+        [searchInput, floatingInput].forEach(inp => {
+            inp.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') searchAndHighlight();
+            });
+        });
+    </script>
+</body>
+</html>

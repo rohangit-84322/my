@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Secure Encryptor | AES-256</title>
+    <!-- Favicon - Emerald Shield Lock -->
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%2310b981'%3E%3Cpath d='M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm-1 6h2v2h-2V7zm0 4h2v6h-2v-6z'/%3E%3C/svg%3E">
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Crypto Library for AES Encryption -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
+    <!-- QR Code Generator Library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <!-- QR Scanner Library -->
+    <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
+    <!-- Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    
+    <style>
+        body {
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background-color: #0f172a;
+            color: #f8fafc;
+        }
+        .qr-output img {
+            margin: 0 auto;
+            max-width: 100%;
+            height: auto;
+            border: 8px solid white;
+            border-radius: 8px;
+        }
+        #scan-video {
+            width: 100%;
+            border-radius: 0.5rem;
+            object-fit: cover;
+        }
+        .scan-overlay {
+            border: 2px solid #10b981;
+            box-shadow: 0 0 0 100vmax rgba(0, 0, 0, 0.7);
+            content: '';
+            display: block;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 70%;
+            height: 70%;
+            max-width: 250px;
+            max-height: 250px;
+            border-radius: 12px;
+            z-index: 10;
+        }
+        @keyframes scan-line {
+            0% { top: 0; }
+            50% { top: 100%; }
+            100% { top: 0; }
+        }
+        .scan-line {
+            width: 100%;
+            height: 2px;
+            background: #10b981;
+            position: absolute;
+            animation: scan-line 2s linear infinite;
+            box-shadow: 0 0 8px #10b981;
+        }
+        .dark-input {
+            background-color: #1e293b;
+            border: 1px solid #334155;
+            color: white;
+        }
+        .dark-input:focus {
+            border-color: #10b981;
+            outline: none;
+            box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.2);
+        }
+        .hero-img {
+            width: 80px;
+            height: 80px;
+            object-fit: contain;
+            filter: drop-shadow(0 0 8px rgba(16, 185, 129, 0.4));
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col items-center py-8 px-4">
+
+    <!-- Header -->
+    <header class="text-center mb-8">
+        <div class="inline-flex items-center justify-center mb-4">
+            <!-- Replaced light green box with small heroimage.png -->
+            <img src="heroimage.png" alt="Secure Logo" class="hero-img" onerror="this.src='https://cdn-icons-png.flaticon.com/512/2092/2092663.png'">
+        </div>
+        <h1 class="text-4xl font-bold text-white mb-2 tracking-tight">Secure Encryptor</h1>
+        <p class="text-slate-400 font-medium">Automatic Client-side Security</p>
+    </header>
+
+    <!-- Main Card -->
+    <div class="bg-slate-800/50 backdrop-blur-sm w-full max-w-2xl rounded-2xl shadow-2xl overflow-hidden border border-slate-700">
+        
+        <!-- Tabs -->
+        <div class="flex border-b border-slate-700">
+            <button onclick="switchTab('encrypt')" id="tab-encrypt" class="flex-1 py-4 text-center font-semibold text-emerald-400 border-b-2 border-emerald-400 bg-slate-700/30 transition-all">
+                <i class="fas fa-lock mr-2"></i>Encrypt
+            </button>
+            <button onclick="switchTab('decrypt')" id="tab-decrypt" class="flex-1 py-4 text-center font-semibold text-slate-400 hover:text-slate-200 transition-all">
+                <i class="fas fa-lock-open mr-2"></i>Decrypt
+            </button>
+        </div>
+
+        <div class="p-6">
+            <!-- ENCRYPT SECTION -->
+            <div id="section-encrypt" class="space-y-5">
+                <div>
+                    <label class="block text-sm font-medium text-slate-400 mb-2">Message to Encrypt</label>
+                    <textarea id="encrypt-input" class="w-full p-4 rounded-lg h-32 dark-input" placeholder="Type your secret message here..."></textarea>
+                </div>
+
+                <!-- Password input removed as per request -->
+
+                <button onclick="performEncryption()" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-4 px-4 rounded-xl transition duration-200 shadow-lg shadow-emerald-900/40">
+                    <i class="fas fa-shield-alt mr-2"></i>Generate Secure Cipher
+                </button>
+
+                <div id="encrypt-result" class="hidden space-y-4 pt-4 border-t border-slate-700">
+                    <div>
+                        <label class="block text-sm font-medium text-emerald-400 mb-2">Encrypted Ciphertext</label>
+                        <div class="relative">
+                            <textarea id="encrypt-output" readonly class="w-full p-4 rounded-lg h-24 bg-slate-900 text-emerald-100 font-mono text-xs border border-emerald-900/50"></textarea>
+                            <button onclick="copyToClipboard('encrypt-output')" class="absolute top-2 right-2 px-3 py-1 bg-emerald-600 text-white rounded-md hover:bg-emerald-500 text-xs font-bold transition-colors">
+                                <i class="fas fa-copy mr-1"></i>Copy
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="flex flex-col items-center">
+                        <button onclick="generateCipherQR()" class="text-sm text-slate-400 hover:text-emerald-400 flex items-center gap-2 transition-colors">
+                            <i class="fas fa-qrcode"></i> Generate QR Code for sharing
+                        </button>
+                        <div id="cipher-qr-container" class="hidden mt-4 flex flex-col items-center p-6 bg-white rounded-xl shadow-inner">
+                            <div id="cipher-qr-code" class="qr-output"></div>
+                            <p class="text-slate-600 text-[10px] mt-4 font-bold uppercase tracking-widest">Encrypted Data Stream</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- DECRYPT SECTION -->
+            <div id="section-decrypt" class="hidden space-y-5">
+                <div class="grid grid-cols-2 gap-4">
+                    <button onclick="startCamera()" class="p-4 bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 rounded-xl hover:bg-emerald-500/20 flex flex-col items-center gap-2 transition-all">
+                        <i class="fas fa-camera text-xl"></i>
+                        <span class="text-xs font-bold">SCAN QR</span>
+                    </button>
+                    <button onclick="pasteFromClipboard()" class="p-4 bg-slate-700/50 border border-slate-600 text-slate-300 rounded-xl hover:bg-slate-700 flex flex-col items-center gap-2 transition-all">
+                        <i class="fas fa-paste text-xl"></i>
+                        <span class="text-xs font-bold">PASTE TEXT</span>
+                    </button>
+                </div>
+
+                <div id="camera-container" class="hidden relative bg-black rounded-2xl overflow-hidden aspect-video flex items-center justify-center border-2 border-emerald-500/50">
+                    <video id="scan-video" playsinline></video>
+                    <div class="scan-overlay"><div class="scan-line"></div></div>
+                    <button onclick="stopCamera()" class="absolute top-4 right-4 bg-red-500/80 text-white w-10 h-10 rounded-full flex items-center justify-center hover:bg-red-500 z-20">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-slate-400 mb-2">Encrypted Text (Ciphertext)</label>
+                    <textarea id="decrypt-input" class="w-full p-4 rounded-lg h-24 dark-input font-mono text-xs" placeholder="Paste the encrypted code here..."></textarea>
+                </div>
+
+                <!-- Password input removed as per request -->
+
+                <button onclick="performDecryption()" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-4 px-4 rounded-xl transition duration-200 shadow-lg shadow-emerald-900/40">
+                    <i class="fas fa-unlock-alt mr-2"></i>Decrypt Message
+                </button>
+
+                <div id="decrypt-result" class="hidden mt-4 p-5 bg-emerald-500/10 border border-emerald-500/30 rounded-xl">
+                    <label class="block text-xs font-black text-emerald-400 uppercase tracking-tighter mb-2 italic">Original Message:</label>
+                    <p id="decrypt-output" class="text-white whitespace-pre-wrap break-words font-medium leading-relaxed"></p>
+                </div>
+
+                <div id="decrypt-error" class="hidden mt-4 p-4 bg-red-500/10 border border-red-500/30 rounded-xl text-red-400 text-sm text-center font-bold">
+                    <i class="fas fa-shield-virus mr-2"></i> Error: Could not decrypt data.
+                </div>
+            </div>
+        </div>
+        
+        <!-- Footer -->
+        <div class="bg-slate-900/80 px-6 py-4 border-t border-slate-700/50 text-[10px] text-slate-500 flex justify-between items-center uppercase tracking-widest font-bold">
+            <span class="flex items-center gap-1"><i class="fas fa-network-wired text-emerald-500/50"></i> Standard Protocol</span>
+            <span class="flex items-center gap-1"><i class="fas fa-microchip text-emerald-500/50"></i> AES-256</span>
+        </div>
+    </div>
+
+    <canvas id="qr-canvas" class="hidden"></canvas>
+
+    <script>
+        // Internal system key
+        const SYSTEM_KEY = "internal-secure-key-001";
+
+        function copyToClipboard(elementId) {
+            const el = document.getElementById(elementId);
+            el.select();
+            document.execCommand('copy');
+            const btn = event.currentTarget;
+            const originalText = btn.innerHTML;
+            btn.innerHTML = '<i class="fas fa-check"></i> Copied';
+            setTimeout(() => btn.innerHTML = originalText, 2000);
+        }
+
+        async function pasteFromClipboard() {
+            try {
+                const text = await navigator.clipboard.readText();
+                document.getElementById('decrypt-input').value = text;
+            } catch (err) {
+                console.error('Failed to read clipboard');
+            }
+        }
+
+        function switchTab(tab) {
+            const encSection = document.getElementById('section-encrypt');
+            const decSection = document.getElementById('section-decrypt');
+            const encTab = document.getElementById('tab-encrypt');
+            const decTab = document.getElementById('tab-decrypt');
+
+            if (tab === 'encrypt') {
+                encSection.classList.remove('hidden');
+                decSection.classList.add('hidden');
+                encTab.className = "flex-1 py-4 text-center font-semibold text-emerald-400 border-b-2 border-emerald-400 bg-slate-700/30 transition-all";
+                decTab.className = "flex-1 py-4 text-center font-semibold text-slate-400 hover:text-slate-200 transition-all";
+                stopCamera();
+            } else {
+                encSection.classList.add('hidden');
+                decSection.classList.remove('hidden');
+                decTab.className = "flex-1 py-4 text-center font-semibold text-emerald-400 border-b-2 border-emerald-400 bg-slate-700/30 transition-all";
+                encTab.className = "flex-1 py-4 text-center font-semibold text-slate-400 hover:text-slate-200 transition-all";
+            }
+        }
+
+        function performEncryption() {
+            const text = document.getElementById('encrypt-input').value;
+
+            if (!text) return;
+
+            try {
+                // Encryption using the internal key system
+                const encrypted = CryptoJS.AES.encrypt(text, SYSTEM_KEY).toString();
+                document.getElementById('encrypt-output').value = encrypted;
+                document.getElementById('encrypt-result').classList.remove('hidden');
+                document.getElementById('cipher-qr-container').classList.add('hidden');
+            } catch (e) {
+                console.error(e);
+            }
+        }
+
+        function generateCipherQR() {
+            const text = document.getElementById('encrypt-output').value;
+            const container = document.getElementById('cipher-qr-code');
+            const wrapper = document.getElementById('cipher-qr-container');
+            if (!text) return;
+
+            container.innerHTML = "";
+            wrapper.classList.remove('hidden');
+
+            new QRCode(container, {
+                text: text,
+                width: 256,
+                height: 256,
+                colorDark : "#0f172a",
+                colorLight : "#ffffff",
+                correctLevel : QRCode.CorrectLevel.L
+            });
+        }
+
+        function performDecryption() {
+            const ciphertext = document.getElementById('decrypt-input').value;
+            const resultDiv = document.getElementById('decrypt-result');
+            const errorDiv = document.getElementById('decrypt-error');
+            const outputP = document.getElementById('decrypt-output');
+
+            resultDiv.classList.add('hidden');
+            errorDiv.classList.add('hidden');
+
+            if (!ciphertext) return;
+
+            try {
+                // Decryption using the internal key system
+                const bytes = CryptoJS.AES.decrypt(ciphertext, SYSTEM_KEY);
+                const originalText = bytes.toString(CryptoJS.enc.Utf8);
+
+                if (originalText) {
+                    outputP.innerText = originalText;
+                    resultDiv.classList.remove('hidden');
+                } else {
+                    throw new Error();
+                }
+            } catch (e) {
+                errorDiv.classList.remove('hidden');
+            }
+        }
+
+        let video = document.getElementById('scan-video');
+        let canvasElement = document.getElementById('qr-canvas');
+        let canvas = canvasElement.getContext('2d', { willReadFrequently: true });
+        let stream = null;
+        let scanning = false;
+
+        async function startCamera() {
+            const container = document.getElementById('camera-container');
+            container.classList.remove('hidden');
+            try {
+                stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } });
+                video.srcObject = stream;
+                video.play();
+                scanning = true;
+                requestAnimationFrame(tick);
+            } catch (err) {
+                container.classList.add('hidden');
+            }
+        }
+
+        function stopCamera() {
+            scanning = false;
+            if (stream) {
+                stream.getTracks().forEach(track => track.stop());
+                stream = null;
+            }
+            document.getElementById('camera-container').classList.add('hidden');
+        }
+
+        function tick() {
+            if (!scanning) return;
+            if (video.readyState === video.HAVE_ENOUGH_DATA) {
+                canvasElement.height = video.videoHeight;
+                canvasElement.width = video.videoWidth;
+                canvas.drawImage(video, 0, 0, canvasElement.width, canvasElement.height);
+                const imageData = canvas.getImageData(0, 0, canvasElement.width, canvasElement.height);
+                const code = jsQR(imageData.data, imageData.width, imageData.height);
+                if (code) {
+                    document.getElementById('decrypt-input').value = code.data;
+                    stopCamera();
+                    performDecryption();
+                    return;
+                }
+            }
+            requestAnimationFrame(tick);
+        }
+    </script>
+</body>
+</html>

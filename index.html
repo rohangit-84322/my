@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Rohan</title>
+  <link rel="icon" type="image/png" href="favicon.ico?update">
+  
+  <!-- Font Awesome and Lucide Icons -->
+  <link rel="stylesheet" href="all.min.css" />
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <link rel="stylesheet" href="style.css" /> 
+  
+  <style>
+    #vanta-container { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 0; opacity: 0.2; }
+    .site-wrapper { position: relative; z-index: 1; }
+    .contact-confirmation-note { font-size: 0.9rem; color: hsl(var(--primary-color)); font-weight: 600; display: block; margin: 10px 0; }
+    .contact-verification-ui label { display: block; margin-top: 10px; font-size: 1.1rem; font-weight: 600; margin-bottom: 5px; }
+    .contact-verification-ui input[type="text"] { width: 100%; padding: 10px; margin-bottom: 10px; border: 1px solid rgba(255, 255, 255, 0.2); background-color: rgba(0, 0, 0, 0.3); color: #fff; border-radius: 5px; box-sizing: border-box; }
+    .contact-verification-ui .button-group { display: flex; flex-wrap: wrap; gap: 15px; margin-top: 20px; }
+    #features .loading-placeholder { text-align: center; padding: 40px 0; font-size: 1.2rem; color: #888; }
+    #legal-popup .popup-content { max-height: 90vh; overflow-y: auto; margin-top: 5vh; margin-bottom: 5vh; }
+    .file-modal { display: none; position: fixed; z-index: 1002; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0, 0, 0, 0.8); padding-top: 50px; }
+    .file-modal-content { background-color: #1a1a1a; margin: 5% auto; padding: 30px; border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 10px; max-width: 800px; width: 90%; position: relative; color: #fff; }
+    .close-file-btn { color: #aaa; position: absolute; top: 10px; right: 20px; font-size: 2.5rem; background: none; border: none; cursor: pointer; }
+    .file-controls-group { display: flex; gap: 10px; margin-bottom: 20px; align-items: center; flex-wrap: wrap; }
+    #file-link-input { flex-grow: 1; background-color: rgba(255, 255, 255, 0.1); border: 1px solid rgba(255, 255, 255, 0.2); padding: 10px; color: #fff; border-radius: 5px; }
+    .file-preview-container { width: 100%; min-height: 400px; max-height: 70vh; overflow: hidden; background-color: #000; display: flex; justify-content: center; align-items: center; border-radius: 5px; }
+    #file-preview-content img, #file-preview-content video, #file-preview-content iframe { width: 100%; height: 100%; border: none; object-fit: contain; }
+    .menu-toggle { display: none; background: none; border: none; color: #fff; font-size: 1.8rem; cursor: pointer; z-index: 1002; }
+    
+    /* Icon alignment helpers */
+    .nav-item-content { display: flex; align-items: center; gap: 8px; }
+    .lucide { width: 18px; height: 18px; vertical-align: middle; }
+    
+    @media (max-width: 900px) {
+        .menu-toggle { display: block; }
+        #main-nav { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100vh; background-color: rgba(10, 13, 15, 0.98); z-index: 1001; padding-top: 80px; flex-direction: column; align-items: center; }
+        #main-nav.show { display: flex; }
+        #main-nav ul { list-style: none; padding: 0; text-align: center; width: 100%; flex-direction: column; }
+        #main-nav li { margin: 25px 0; }
+        #main-nav a { font-size: 1.5rem; display: block; }
+    }
+    @media (min-width: 901px) { #main-nav { display: block !important; } #main-nav ul { display: flex; gap: 20px; list-style: none; } }
+    .header-content { display: flex; justify-content: space-between; align-items: center; padding: 0 20px; height: 80px; }
+    #captcha-container { display: flex; flex-direction: column; align-items: center; margin-bottom: 15px; background: rgba(255,255,255,0.05); padding: 10px; border-radius: 8px; }
+    canvas#captcha { border: 1px solid rgba(255,255,255,0.2); border-radius: 4px; margin-bottom: 10px; max-width: 100%; }
+    .captcha-controls { display: flex; gap: 10px; width: 100%; justify-content: center; }
+    #regenerate-btn { background: transparent; border: 1px solid rgba(255,255,255,0.3); color: #ddd; padding: 5px 10px; border-radius: 4px; cursor: pointer; font-size: 0.8rem; display: flex; align-items: center; gap: 5px; }
+    #regenerate-btn:hover { background: rgba(255,255,255,0.1); }
+    #email-reveal-container { margin-top: 20px; padding: 15px; border-radius: 5px; text-align: center; display: none; background-color: rgba(46, 204, 113, 0.2); border: 1px solid #2ecc71; }
+    .revealed-email { font-size: 1.5rem; font-weight: bold; color: #fff; user-select: all; margin-bottom: 15px; display: block; }
+    .reveal-actions { display: flex; justify-content: center; gap: 10px; }
+    .btn-action { background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); color: #fff; padding: 8px 15px; border-radius: 5px; cursor: pointer; text-decoration: none; font-size: 0.9rem; display: flex; align-items: center; gap: 8px; transition: all 0.3s ease; }
+    .btn-action:hover { background: rgba(255,255,255,0.2); border-color: #fff; }
+    
+    /* Project card styling with icon */
+    .feature-card h3 { display: flex; align-items: center; gap: 10px; }
+  </style>
+</head>
+<body>
+    
+  <canvas id="confetti-canvas" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 10004; pointer-events: none;"></canvas>
+  <div id="vanta-container"></div>
+
+  <div class="site-wrapper">
+    <header>
+      <div class="header-content">
+        <a href="#hero" class="logo">Rohan</a>
+        <button class="menu-toggle" aria-label="Toggle navigation menu"><i data-lucide="menu"></i></button>
+        <nav id="main-nav">
+          <ul>
+            <li><a href="#hero" class="active"><span class="nav-item-content"><i data-lucide="home"></i> Home</span></a></li>
+            <li><a href="#features"><span class="nav-item-content"><i data-lucide="code-2"></i> Projects</span></a></li>
+            <li><a href="#team"><span class="nav-item-content"><i data-lucide="user"></i> Creator</span></a></li>
+            <li><a href="#contact" id="contact-trigger"><span class="nav-item-content"><i data-lucide="mail"></i> Contact</span></a></li>
+          </ul>
+        </nav>
+      </div>
+    </header>
+
+    <section id="hero" class="hero-section">
+      <div class="hero-content">
+        <h1>Cas-ual Developer</h1>
+        <p>Building digital experiences that merge creativity with technology. Learning in modern web and cyber systems.</p>
+        <div class="btn-group">
+            <a href="#features" class="button primary-button">
+                <i data-lucide="eye" style="margin-right:8px"></i>View Projects
+            </a>
+        </div>
+      </div>
+    </section>
+
+    <section id="features">
+        <h2><i data-lucide="layers" style="margin-right:12px"></i>Featured Projects</h2>
+        <div class="loading-placeholder">Loading projects...</div>
+        <div class="features-grid"></div>
+    </section>
+
+    <section id="team">
+      <h2>I'm</h2>
+      <div class="team-grid">
+        <div class="team-member-card">
+          <img src="heroimage.png" alt="Creator Rohan">
+          <h3>Rohan</h3>
+        </div>
+      </div>
+    </section>
+
+    <section id="contact" class="contact-section">
+      <h2>Connect with Rohan</h2>
+      <div class="contact-content">
+        <p>For contact me open the Contact Form Below.</p>
+        <div class="btn-group">
+            <a href="#" class="button primary-button" id="open-contact-modal-btn">
+                <i data-lucide="send" style="margin-right:8px"></i>Contact Me
+            </a>
+        </div>
+      </div>
+    </section>
+
+    <footer>
+      <p>&copy; 2025 Rohan. All rights reserved.</p>
+      <a href="privacy.html" target="_blank" style="color: #FFFFFF; text-decoration: none;"><i data-lucide="shield-check" style="width:14px; height:14px"></i> Privacy Policy</a> 
+      <a href="terms.html" target="_blank" style="color: #FFFFFF; text-decoration: none;"> । <i data-lucide="file-text" style="width:14px; height:14px"></i> Terms and Condition</a> 
+    </footer>
+  </div> 
+  
+  <div id="legal-popup" class="contact-modal">
+      <div class="popup-content">
+          <button class="close-btn" aria-label="Close modal">&times;</button>
+          <h3><i data-lucide="message-square" style="margin-right:10px"></i>Contact</h3>
+          <div class="contact-verification-ui">
+              <div id="captcha-container">
+                  <canvas id="captcha" width="220" height="80"></canvas>
+                  <div class="captcha-controls">
+                      <button id="regenerate-btn" type="button"><i data-lucide="refresh-cw"></i> New Code</button>
+                  </div>
+              </div>
+              <label for="captcha-input"><i data-lucide="user-check" style="width:16px; height:16px"></i> Verify you are human:</label>
+              <input type="text" id="captcha-input" placeholder="Enter the code shown above" autocomplete="off">
+              <div class="button-group">
+                  <button type="button" id="verify-btn" class="button primary-button">Verify & Show Email</button>
+              </div>
+              <p id="verification-status" style="margin-top: 20px; font-weight: 600;"></p>
+              <div id="email-reveal-container">
+                  <p style="margin-bottom: 5px; color: #ccc;">Contact Email:</p>
+                  <div id="revealed-email-text" class="revealed-email"></div>
+                  <div class="reveal-actions">
+                      <button id="copy-email-btn" class="btn-action"><i data-lucide="copy"></i> Copy</button>
+                      <a id="mailto-link" href="#" class="btn-action"><i data-lucide="external-link"></i> Open Mail</a>
+                  </div>
+              </div>
+          </div>
+      </div>
+  </div>
+
+  <div id="loading-overlay">
+      <div class="loading-message">Loading.......</div>
+      <div class="progress-bar-container"><div class="progress-bar" id="progress-bar"></div></div>
+      <div class="progress-text" id="progress-text">0%</div>
+  </div>
+
+  <div id="file-viewer-modal" class="file-modal">
+      <div class="file-modal-content">
+          <button class="close-file-btn" aria-label="Close file viewer">&times;</button>
+          <h3 id="file-title">File/Project Viewer</h3>
+          <div class="file-controls-group">
+              <input type="text" id="file-link-input" readonly>
+              <button id="copy-file-link-btn" class="button btn-small"><i data-lucide="copy"></i> Copy Link</button>
+              <a href="#" id="download-file-btn" class="button primary-button" download><i data-lucide="download"></i> Download</a>
+          </div>
+          <div class="file-preview-container"><div id="file-preview-content"></div></div>
+      </div>
+  </div>
+
+  <script src="confetti.browser.min.js"></script>
+  <script src="three.min.js"></script>
+  <script src="vanta.dots.min.js"></script>
+
+  <script>
+    const legalPopup = document.getElementById('legal-popup');
+    const contactTrigger = document.getElementById('contact-trigger'); 
+    const openContactModalBtn = document.getElementById('open-contact-modal-btn');
+    const mainNav = document.getElementById('main-nav');
+    const menuToggle = document.querySelector('.menu-toggle');
+    const loadingOverlay = document.getElementById('loading-overlay');
+    const progressBar = document.getElementById('progress-bar');
+    const progressText = document.getElementById('progress-text');
+    let loadingInterval = null;
+    let globalProjectsData = []; 
+    
+    const fileViewerModal = document.getElementById('file-viewer-modal');
+    const closeFileBtn = document.querySelector('.close-file-btn');
+    const fileTitle = document.getElementById('file-title');
+    const fileLinkInput = document.getElementById('file-link-input');
+    const copyFileLinkBtn = document.getElementById('copy-file-link-btn');
+    const downloadFileBtn = document.getElementById('download-file-btn');
+    const filePreviewContent = document.getElementById('file-preview-content');
+
+    // Initialize Lucide icons
+    function initIcons() {
+        if (typeof lucide !== 'undefined') {
+            lucide.createIcons();
+        }
+    }
+
+    menuToggle.addEventListener('click', () => { mainNav.classList.toggle('show'); });
+    document.querySelectorAll('#main-nav a').forEach(link => {
+        link.addEventListener('click', () => { if (window.innerWidth <= 900) mainNav.classList.remove('show'); });
+    });
+
+    function openFileModal(project) {
+        fileTitle.textContent = project.title;
+        fileLinkInput.value = project.url;
+        downloadFileBtn.href = project.url;
+        filePreviewContent.innerHTML = '';
+        const ext = project.url.split('.').pop().toLowerCase();
+        if (['jpg', 'jpeg', 'png', 'gif', 'webp'].includes(ext)) {
+            const img = document.createElement('img'); img.src = project.url; filePreviewContent.appendChild(img);
+        } else if (['mp4', 'webm', 'ogg'].includes(ext)) {
+            const v = document.createElement('video'); v.src = project.url; v.controls = true; filePreviewContent.appendChild(v);
+        } else {
+            const iframe = document.createElement('iframe'); iframe.src = project.url; filePreviewContent.appendChild(iframe);
+        }
+        fileViewerModal.style.display = 'block';
+    }
+    closeFileBtn.addEventListener('click', () => { fileViewerModal.style.display = 'none'; });
+    fileViewerModal.addEventListener('click', (e) => { if (e.target.id === 'file-viewer-modal') fileViewerModal.style.display = 'none'; });
+    copyFileLinkBtn.addEventListener('click', () => { 
+        fileLinkInput.select(); 
+        document.execCommand('copy'); 
+        const originalHtml = copyFileLinkBtn.innerHTML;
+        copyFileLinkBtn.textContent = 'Copied!'; 
+        setTimeout(() => { copyFileLinkBtn.innerHTML = originalHtml; initIcons(); }, 2000); 
+    });
+
+    window.onload = function() {
+        if (typeof VANTA !== 'undefined') VANTA.DOTS({ el: "#vanta-container", color: 0x6a11cb, backgroundColor: 0x0a0d0f });
+        loadProjectsContent();
+        generateCaptcha();
+        initIcons();
+    };
+
+    function openPopup() { 
+        legalPopup.classList.add('show'); 
+        generateCaptcha();
+        document.getElementById('captcha-input').value = '';
+        document.getElementById('email-reveal-container').style.display = 'none';
+        document.getElementById('verification-status').textContent = '';
+        document.getElementById('verify-btn').style.display = 'inline-block';
+        initIcons();
+    }
+    function closePopup() { legalPopup.classList.remove('show'); }
+    [contactTrigger, openContactModalBtn].forEach(el => el.addEventListener('click', (e) => { e.preventDefault(); openPopup(); }));
+    legalPopup.querySelectorAll('.close-btn').forEach(b => b.addEventListener('click', closePopup));
+
+    function loadProjectsContent() {
+        const featuresGrid = document.querySelector('#features .features-grid');
+        const loadingPlaceholder = document.querySelector('#features .loading-placeholder');
+        fetch('projects.json').then(r => r.json()).then(data => {
+            globalProjectsData = data; 
+            loadingPlaceholder.style.display = 'none'; 
+            let html = '';
+            data.forEach(p => { 
+                html += `
+                <div class="feature-card">
+                    <h3 id="${p.id}"><i data-lucide="box" class="lucide"></i> ${p.title}</h3>
+                    <p>${p.description}</p>
+                    <a href="#" class="button primary-button btn-small" data-project="${p.id}" style="margin-top: 15px;">
+                        <i data-lucide="external-link" style="width:14px;height:14px;margin-right:5px"></i>Launch
+                    </a>
+                </div>`; 
+            });
+            featuresGrid.innerHTML = html;
+            initIcons(); // Re-initialize icons for dynamic content
+            
+            document.querySelectorAll('.feature-card a[data-project]').forEach(link => {
+                link.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const proj = globalProjectsData.find(p => p.id === e.currentTarget.getAttribute('data-project'));
+                    if (proj && proj.url) {
+                        const ext = proj.url.split('.').pop().toLowerCase();
+                        if (['jpg','png','mp4','pdf','docx'].some(x => ext.startsWith(x))) openFileModal(proj);
+                        else triggerLoading(`Launching ${proj.title}...`, proj.url);
+                    }
+                });
+            });
+        }).catch(() => loadingPlaceholder.textContent = 'Could not load projects.');
+    }
+
+    function triggerLoading(msg, url) {
+        loadingOverlay.classList.add('show');
+        loadingOverlay.querySelector('.loading-message').textContent = msg;
+        let p = 0;
+        if (loadingInterval) clearInterval(loadingInterval);
+        loadingInterval = setInterval(() => {
+            p += 30; progressBar.style.width = `${p}%`; progressText.textContent = `${p}%`;
+            if (p >= 100) { clearInterval(loadingInterval); setTimeout(() => { loadingOverlay.classList.remove('show'); window.open(url, '_blank'); }, 200); }
+        }, 100);
+    }
+
+    const canvas = document.getElementById("captcha");
+    const ctx = canvas.getContext("2d");
+    let currentCaptchaCode = "";
+
+    const revealedEmail = "mail.git.rohan@gmail.com";
+
+    function randomText(length = 6) {
+      const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+      let text = "";
+      for (let i = 0; i < length; i++) {
+        text += chars[Math.floor(Math.random() * chars.length)];
+      }
+      return text;
+    }
+
+    function generateCaptcha() {
+      ctx.fillStyle = "#eaffea";
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      currentCaptchaCode = randomText();
+      ctx.font = "bold 36px Arial";
+      ctx.fillStyle = "#2faa00";
+      let x = 20;
+      for (let char of currentCaptchaCode) {
+        let y = 55 + Math.random() * 6;
+        let angle = (Math.random() - 0.5) * 0.4;
+        ctx.save();
+        ctx.translate(x, y);
+        ctx.rotate(angle);
+        ctx.fillText(char, 0, 0);
+        ctx.restore();
+        x += 30;
+      }
+      for (let i = 0; i < 5; i++) {
+        ctx.strokeStyle = "#7ad000";
+        ctx.beginPath();
+        ctx.moveTo(Math.random() * 220, Math.random() * 80);
+        ctx.lineTo(Math.random() * 220, Math.random() * 80);
+        ctx.stroke();
+      }
+    }
+
+    document.getElementById('regenerate-btn').addEventListener('click', () => {
+        generateCaptcha();
+        initIcons();
+    });
+
+    document.getElementById('verify-btn').addEventListener('click', function() {
+        const userVal = document.getElementById('captcha-input').value.trim().toUpperCase();
+        const statusEl = document.getElementById('verification-status');
+        
+        if (userVal === currentCaptchaCode) {
+            statusEl.textContent = "Verified!";
+            statusEl.style.color = "#2ecc71";
+            this.style.display = 'none';
+            
+            const emailContainer = document.getElementById('email-reveal-container');
+            const emailText = document.getElementById('revealed-email-text');
+            const mailtoLink = document.getElementById('mailto-link');
+            
+            emailText.textContent = revealedEmail;
+            mailtoLink.href = `mailto:${revealedEmail}`;
+            emailContainer.style.display = 'block';
+            initIcons();
+            
+            const confettiCanvas = document.getElementById('confetti-canvas');
+            const customConfetti = confetti.create(confettiCanvas, { resize: true, useWorker: true });
+            customConfetti({ particleCount: 150, spread: 70, origin: { y: 0.6 } });
+        } else {
+            statusEl.textContent = "Incorrect code. Please try again.";
+            statusEl.style.color = "#e74c3c";
+            generateCaptcha();
+            document.getElementById('captcha-input').value = '';
+        }
+    });
+
+    document.getElementById('copy-email-btn').addEventListener('click', function() {
+        const email = document.getElementById('revealed-email-text').textContent;
+        const tempInput = document.createElement('input');
+        tempInput.value = email;
+        document.body.appendChild(tempInput);
+        tempInput.select();
+        document.execCommand('copy');
+        document.body.removeChild(tempInput);
+        
+        const originalHtml = this.innerHTML;
+        this.innerHTML = '<i data-lucide="check" style="width:16px;height:16px"></i> Copied';
+        initIcons();
+        setTimeout(() => { this.innerHTML = originalHtml; initIcons(); }, 2000);
+    });
+  </script>
+</body>
+</html>
