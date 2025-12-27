@@ -12,5 +12,19 @@
     "title": "Endcrypt Tool",
     "description": "Endcrypt Text and Decrypt Your Text",
     "url": "endcrypt.html"
+  },
+  {
+    "id": "third-project",
+    "iconClass": "fas fa-key",
+    "title": "ERROR",
+    "description": "ERROR Page",
+    "url": "error.html"
+  },
+  {
+    "id": "fourth-project",
+    "iconClass": "fas fa-key",
+    "title": "QR",
+    "description": "QR Generator & Scanner",
+    "url": "QR.html"
   }
 ]
